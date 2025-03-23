@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package calproto;
+
+message Connect {
+  uint32 header = 1;
+  string client_id = 2; 
+}
+
+// Gửi khi client muốn ngắt kết nối
+message Disconnect {
+  uint32 header = 1;
+  string client_id = 2;
+}
+
+message Ping {
+  uint32 header = 1;
+  string client_id = 2;
+}
+
+
+message Ack {
+  uint32 header = 1;
+  string message_id = 2; 
+}
+
+// Yêu cầu tính toán phép toán, gửi từ Client → Server
+message ExpressionRequest {
+  uint32 header = 1;
+  string message_id = 2;  // để tiện cho ACK
+  double operand1 = 3;
+  double operand2 = 4;
+  double operand3 = 5;
+  string operator1 = 6; // "+", "-", "*", "/"
+  string operator2 = 7; // "+", "-", "*", "/"
+}
+
+// Kết quả phép tính trả về từ Server → Client
+message ExpressionResult {
+  uint32 header = 1;
+  string message_id = 2;  // để tiện cho ACK
+  double result = 3;
+}
+
+// Gói bọc tổng quát cho client gửi đi
+message ClientMessage {
+  oneof payload {
+    Connect connect = 1;
+    Disconnect disconnect = 2;
+    Ping ping = 3;
+    ExpressionRequest expression_request = 4;
+    Ack ack = 5;
+  }
+}
+
+// Gói bọc tổng quát cho server gửi đi
+message ServerMessage {
+  oneof payload {
+    ExpressionResult expression_result = 1;
+    Ack ack = 2;
+  }
+}
