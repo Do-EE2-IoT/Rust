@@ -5,3 +5,10 @@ edition = "2021"
 
 [dependencies]
 protocol = {workspace = true}
+tokio = { workspace = true, features = ["full"] }
+bincode = { workspace = true }
+tokio-util = { workspace = true, features = ["codec"] }
+bytes = { workspace = true }
+serde = { workspace = true, features = ["derive"] } 
+futures = { workspace = true }
+prost = { workspace = true }

@@ -5,10 +5,5 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+calproto_rust = {workspace = true}
 tokio = { workspace = true, features = ["full"] }
-bincode = { workspace = true }
-tokio-util = { workspace = true, features = ["codec"] }
-bytes = { workspace = true }
-serde = { workspace = true, features = ["derive"] } 
-futures = { workspace = true }
-prost = { workspace = true }
