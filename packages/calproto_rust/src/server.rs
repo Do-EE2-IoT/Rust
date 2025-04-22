@@ -1,11 +1,14 @@
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
-use tokio::net::{TcpListener, TcpStream};
-use tokio_util::codec::Framed;
 
-struct MyCodec;
+use crate::{error::MyCalError, packet::Packet};
+use futures::{SinkExt, StreamExt};
+use tokio::net::TcpListener;
+use tokio::net::TcpStream;
+use tokio_util::codec::Framed;
+use crate::packet::CalProtoCodec;
 
 pub struct Server {
-    framed: Framed<TcpStream, MyCodec>,
+    framed: Framed<TcpStream, CalProtoCodec>,
 }
 
 impl Server {
@@ -23,15 +26,23 @@ impl Server {
             .expect("Must bind listener to address");
         let (stream, socket) = listener.accept().await.expect("?");
         println!("accept connnect with client  {}", socket.ip());
-        let framed = Framed::new(stream, MyCodec);
+        let framed = Framed::new(stream, CalProtoCodec);
         Self { framed }
     }
 
-    pub async fn wait_message_from_client(&mut self) {
-        todo!();
+    pub async fn send_to_server(&mut self, packet: Packet) {
+        if let Err(e) = self.framed.send(packet).await {
+            println!("Error {:?}", e);
+        }
     }
 
-    pub async fn respond(&mut self) {
-        todo!();
+    pub async fn recv_from_server(&mut self) -> Result<Packet, MyCalError> {
+        match self.framed.next().await {
+            Some(packet) => match packet {
+                Ok(msg) => Ok(msg),
+                Err(e) => Err(e),
+            },
+            None => Err(MyCalError::RecvMessageError),
+        }
     }
 }

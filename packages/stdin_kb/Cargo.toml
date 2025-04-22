@@ -1,0 +1,9 @@
+[package]
+name = "stdin_kb"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+protocol = {workspace = true}
+tokio = { workspace = true, features = ["full"] }
+async-trait = "0.1"

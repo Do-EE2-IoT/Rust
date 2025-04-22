@@ -1,11 +1,13 @@
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 
+use crate::{error::MyCalError, packet::Packet};
+use futures::{SinkExt, StreamExt};
 use tokio::net::TcpStream;
 use tokio_util::codec::Framed;
+use crate::packet::CalProtoCodec;
 
-struct MyCodec;
 pub struct Client {
-    framed: Framed<TcpStream, MyCodec>,
+    framed: Framed<TcpStream, CalProtoCodec>,
     client_id: String,
 }
 
@@ -23,15 +25,23 @@ impl Client {
             .await
             .expect("Must create stream with server");
 
-        let framed = Framed::new(stream, MyCodec);
+        let framed = Framed::new(stream, CalProtoCodec);
 
         Self { framed, client_id }
     }
-    pub async fn send(&mut self) {
-        todo!();
+    pub async fn send_to_server(&mut self, packet: Packet) {
+        if let Err(e) = self.framed.send(packet).await {
+            println!("Error {:?} when client send!", e);
+        }
     }
 
-    pub async fn wait_message(&mut self) {
-        todo!();
+    pub async fn recv_from_server(&mut self) -> Result<Packet, MyCalError> {
+        match self.framed.next().await {
+            Some(packet) => match packet {
+                Ok(msg) => Ok(msg),
+                Err(e) => Err(e),
+            },
+            None => Err(MyCalError::RecvMessageError),
+        }
     }
 }

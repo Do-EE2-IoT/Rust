@@ -5,6 +5,7 @@ members = ["bin/*", "packages/*"]
 [workspace.dependencies]
 protocol = {path = "packages/protocol", version = "0.1.0"}
 calproto_rust ={ path = "packages/calproto_rust", version = "0.1.0"}
+stdin_kb = {path = "packages/stdin_kb", version = "0.1.0"}
 tokio = "1.44.1"
 bincode = "1.2.1"
 tokio-util = "0.6.0"
