@@ -7,9 +7,8 @@ use tokio::sync::mpsc::{Receiver, Sender};
 async fn console_input_handle(tx: Sender<ConsoleInput>) {
     let mut console_input = Console::default();
     while let Ok(in_data) = console_input.pop().await {
-        println!("Get INPUT OK");
         if let Err(e) = tx.send(in_data).await {
-            println!("Get input error: {:?}", e);
+            println!("Send input channel err: {:?}", e);
         }
     }
 }
@@ -28,17 +27,17 @@ async fn main() {
     loop {
         tokio::select! {
              _ = interval.tick() => {
-               println!("Hello");
-               let msg = ClientMessage{
-                payload: Some(client_message::Payload::Ping(
-                    protocol::proto::Ping { client_id: client.client_id.clone() }
-                ))
+                let msg = ClientMessage{
+                    payload: Some(client_message::Payload::Ping(
+                        protocol::proto::Ping { client_id: client.client_id.clone() }
+                    ))
                };
-               client.send_to_server(Packet::Client(msg)).await;
+              client.send_to_server(Packet::Client(msg)).await;
              },
 
 
               Some(input) = rx.recv() => {
+                println!("Get some thing");
                 match input {
                     ConsoleInput::Disconnect => {
                         let msg = ClientMessage{
