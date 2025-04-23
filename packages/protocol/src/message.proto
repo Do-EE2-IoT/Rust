@@ -3,31 +3,28 @@ syntax = "proto3";
 package calproto;
 
 message Connect {
-  uint32 header = 1;
-  string client_id = 2; 
+  string client_id = 1; 
 }
 
 // Gửi khi client muốn ngắt kết nối
 message Disconnect {
-  uint32 header = 1;
-  string client_id = 2;
+  string client_id = 1;
 }
 
 message Ping {
-  uint32 header = 1;
-  string client_id = 2;
+  string client_id = 1;
 }
 
 
 message Ack {
-  uint32 header = 1;
+  uint32 client_id = 1;
   string message_id = 2; 
 }
 
 // Yêu cầu tính toán phép toán, gửi từ Client → Server
 message ExpressionRequest {
-  uint32 header = 1;
-  string message_id = 2;  // để tiện cho ACK
+  string client_id = 1;
+  double message_id = 2;  // để tiện cho ACK
   double operand1 = 3;
   double operand2 = 4;
   double operand3 = 5;
@@ -37,9 +34,8 @@ message ExpressionRequest {
 
 // Kết quả phép tính trả về từ Server → Client
 message ExpressionResult {
-  uint32 header = 1;
-  string message_id = 2;  // để tiện cho ACK
-  double result = 3;
+  string message_id = 1;  // để tiện cho ACK
+  double result = 2;
 }
 
 // Gói bọc tổng quát cho client gửi đi

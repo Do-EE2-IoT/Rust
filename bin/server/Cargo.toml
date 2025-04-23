@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 calproto_rust = {workspace = true}
 tokio = { workspace = true, features = ["full"] }
+protocol = {workspace = true}

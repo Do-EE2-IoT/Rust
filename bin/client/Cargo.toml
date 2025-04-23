@@ -8,3 +8,4 @@ edition = "2021"
 calproto_rust = {workspace = true}
 stdin_kb = {workspace = true}
 tokio = { workspace = true, features = ["full"] }
+protocol = {workspace = true}

@@ -110,6 +110,7 @@ name = "client"
 version = "0.1.0"
 dependencies = [
  "calproto_rust",
+ "protocol",
  "stdin_kb",
  "tokio",
 ]
@@ -621,6 +622,7 @@ name = "server"
 version = "0.1.0"
 dependencies = [
  "calproto_rust",
+ "protocol",
  "tokio",
 ]
 

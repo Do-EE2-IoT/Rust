@@ -2,33 +2,27 @@
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Connect {
-    #[prost(uint32, tag = "1")]
-    pub header: u32,
-    #[prost(string, tag = "2")]
+    #[prost(string, tag = "1")]
     pub client_id: ::prost::alloc::string::String,
 }
 /// Gửi khi client muốn ngắt kết nối
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Disconnect {
-    #[prost(uint32, tag = "1")]
-    pub header: u32,
-    #[prost(string, tag = "2")]
+    #[prost(string, tag = "1")]
     pub client_id: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Ping {
-    #[prost(uint32, tag = "1")]
-    pub header: u32,
-    #[prost(string, tag = "2")]
+    #[prost(string, tag = "1")]
     pub client_id: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Ack {
     #[prost(uint32, tag = "1")]
-    pub header: u32,
+    pub client_id: u32,
     #[prost(string, tag = "2")]
     pub message_id: ::prost::alloc::string::String,
 }
@@ -36,11 +30,11 @@ pub struct Ack {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ExpressionRequest {
-    #[prost(uint32, tag = "1")]
-    pub header: u32,
+    #[prost(string, tag = "1")]
+    pub client_id: ::prost::alloc::string::String,
     /// để tiện cho ACK
-    #[prost(string, tag = "2")]
-    pub message_id: ::prost::alloc::string::String,
+    #[prost(double, tag = "2")]
+    pub message_id: f64,
     #[prost(double, tag = "3")]
     pub operand1: f64,
     #[prost(double, tag = "4")]
@@ -58,12 +52,10 @@ pub struct ExpressionRequest {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ExpressionResult {
-    #[prost(uint32, tag = "1")]
-    pub header: u32,
     /// để tiện cho ACK
-    #[prost(string, tag = "2")]
+    #[prost(string, tag = "1")]
     pub message_id: ::prost::alloc::string::String,
-    #[prost(double, tag = "3")]
+    #[prost(double, tag = "2")]
     pub result: f64,
 }
 /// Gói bọc tổng quát cho client gửi đi

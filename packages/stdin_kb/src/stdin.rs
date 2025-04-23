@@ -11,7 +11,7 @@ pub struct Console {
 #[derive(Debug)]
 pub enum ConsoleInput {
     Operand(ExpressionRequest),
-    Disconnect(Disconnect),
+    Disconnect,
 }
 
 #[async_trait::async_trait]
@@ -22,7 +22,7 @@ pub trait Input {
 impl ConsoleInput {
     fn get_oprand_and_operator(op1: f64, op2: f64, op3: f64, oprt1: String, oprt2: String) -> Self {
         Self::Operand(ExpressionRequest {
-            header: Default::default(),
+            client_id: Default::default(),
             message_id: Default::default(),
             operand1: op1,
             operand2: op2,
@@ -43,10 +43,7 @@ impl FromStr for ConsoleInput {
         }
 
         if parts.len() == 1 && parts[0].to_lowercase() == "exit" {
-            return Ok(Self::Disconnect(Disconnect {
-                header: Default::default(),
-                client_id: Default::default(),
-            }));
+            return Ok(Self::Disconnect);
         }
 
         if parts.len() != 5 {

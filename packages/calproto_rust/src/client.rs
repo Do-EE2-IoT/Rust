@@ -1,14 +1,15 @@
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 
+use crate::packet::CalProtoCodec;
 use crate::{error::MyCalError, packet::Packet};
 use futures::{SinkExt, StreamExt};
+use protocol::proto::{ClientMessage, ServerMessage};
 use tokio::net::TcpStream;
 use tokio_util::codec::Framed;
-use crate::packet::CalProtoCodec;
 
 pub struct Client {
     framed: Framed<TcpStream, CalProtoCodec>,
-    client_id: String,
+    pub client_id: String,
 }
 
 impl Client {

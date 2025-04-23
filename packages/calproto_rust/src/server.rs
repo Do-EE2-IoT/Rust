@@ -30,13 +30,13 @@ impl Server {
         Self { framed }
     }
 
-    pub async fn send_to_server(&mut self, packet: Packet) {
+    pub async fn send_to_client(&mut self, packet: Packet) {
         if let Err(e) = self.framed.send(packet).await {
             println!("Error {:?}", e);
         }
     }
 
-    pub async fn recv_from_server(&mut self) -> Result<Packet, MyCalError> {
+    pub async fn recv_from_client(&mut self) -> Result<Packet, MyCalError> {
         match self.framed.next().await {
             Some(packet) => match packet {
                 Ok(msg) => Ok(msg),
