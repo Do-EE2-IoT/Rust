@@ -4,4 +4,5 @@ pub enum InputErr {
     InvalidFormat,
     InvalidOperand,
     InvalidOperator,
+    Dividebyzero
 }

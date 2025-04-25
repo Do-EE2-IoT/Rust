@@ -34,7 +34,7 @@ message ExpressionRequest {
 
 // Kết quả phép tính trả về từ Server → Client
 message ExpressionResult {
-  string message_id = 1;  // để tiện cho ACK
+  double message_id = 1;  // để tiện cho ACK
   double result = 2;
 }
 

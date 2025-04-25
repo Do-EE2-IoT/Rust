@@ -7,6 +7,8 @@ use futures::{SinkExt, StreamExt};
 use prost::Message;
 use protocol::proto::{ClientMessage, ServerMessage};
 use tokio_util::codec::{Decoder, Encoder, Framed};
+
+#[derive(Clone)]
 pub enum Packet {
     Client(ClientMessage),
     Server(ServerMessage),

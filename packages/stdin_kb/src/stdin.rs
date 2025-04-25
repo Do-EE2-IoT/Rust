@@ -56,20 +56,29 @@ impl FromStr for ConsoleInput {
         };
 
         let op2 = match parts[2].parse::<f64>() {
-            Ok(num) => num,
+            Ok(num) => {
+                if num == 0.0 {
+                    return Err(InputErr::Dividebyzero);
+                }
+                num
+            }
             Err(_) => return Err(InputErr::InvalidOperand),
         };
 
         let op3 = match parts[4].parse::<f64>() {
-            Ok(num) => num,
+            Ok(num) => {
+                if num == 0.0 {
+                    return Err(InputErr::Dividebyzero);
+                }
+                num
+            }
             Err(_) => return Err(InputErr::InvalidOperand),
         };
 
-        // Get operators
+
         let operator1 = parts[1].to_string();
         let operator2 = parts[3].to_string();
 
-        // Validate operators (assuming we allow +, -, *, /, ^)
         let valid_operators = ["+", "-", "*", "/"];
         if !valid_operators.contains(&operator1.as_str())
             || !valid_operators.contains(&operator2.as_str())

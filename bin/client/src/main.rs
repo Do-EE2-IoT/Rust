@@ -19,7 +19,7 @@ async fn main() {
         tokio::sync::mpsc::channel(10);
 
     tokio::spawn(console_input_handle(tx));
-    let mut client = Client::config((127, 0, 0, 1), 7878, "Do NV".to_string()).await;
+    let mut client = Client::config((127, 0, 0, 1), 7878, "DO MIXI".to_string()).await;
 
     let mut interval = tokio::time::interval(tokio::time::Duration::from_secs(3));
     let mut message_id_count: f64 = 0.0;

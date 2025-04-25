@@ -53,8 +53,8 @@ pub struct ExpressionRequest {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ExpressionResult {
     /// để tiện cho ACK
-    #[prost(string, tag = "1")]
-    pub message_id: ::prost::alloc::string::String,
+    #[prost(double, tag = "1")]
+    pub message_id: f64,
     #[prost(double, tag = "2")]
     pub result: f64,
 }
