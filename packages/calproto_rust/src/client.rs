@@ -30,9 +30,11 @@ impl Client {
 
         Self { framed, client_id }
     }
-    pub async fn send_to_server(&mut self, packet: Packet) {
+    pub async fn send_to_server(&mut self, packet: Packet) -> Result<(),MyCalError > {
         if let Err(e) = self.framed.send(packet).await {
-            println!("Error {:?} when client send!", e);
+            Err(e)
+        }else{
+            Ok(())
         }
     }
 

@@ -10,7 +10,6 @@ message Connack{
   string client_id = 1;
 }
 
-// Gửi khi client muốn ngắt kết nối
 message Disconnect {
   string client_id = 1;
 }
@@ -25,7 +24,6 @@ message Ack {
   string message_id = 2; 
 }
 
-// Yêu cầu tính toán phép toán, gửi từ Client → Server
 message ExpressionRequest {
   string client_id = 1;
   double message_id = 2;  // để tiện cho ACK
@@ -36,13 +34,11 @@ message ExpressionRequest {
   string operator2 = 7; // "+", "-", "*", "/"
 }
 
-// Kết quả phép tính trả về từ Server → Client
 message ExpressionResult {
   double message_id = 1;  // để tiện cho ACK
   double result = 2;
 }
 
-// Gói bọc tổng quát cho client gửi đi
 message ClientMessage {
   oneof payload {
     Connect connect = 1;
@@ -53,7 +49,6 @@ message ClientMessage {
   }
 }
 
-// Gói bọc tổng quát cho server gửi đi
 message ServerMessage {
   oneof payload {
     Connack connack= 1;

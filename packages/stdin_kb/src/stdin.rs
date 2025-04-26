@@ -116,3 +116,64 @@ impl Input for Console {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use protocol::proto::ExpressionRequest;
+
+    #[test]
+    fn test_valid_expression_input() {
+        let input = "10 + 20 * 30";
+        let result = ConsoleInput::from_str(input).unwrap();
+
+        if let ConsoleInput::Operand(expr) = result {
+            assert_eq!(expr.operand1, 10.0);
+            assert_eq!(expr.operator1, "+");
+            assert_eq!(expr.operand2, 20.0);
+            assert_eq!(expr.operator2, "*");
+            assert_eq!(expr.operand3, 30.0);
+        } else {
+            panic!("Expected Operand variant");
+        }
+    }
+
+    #[test]
+    fn test_disconnect_input() {
+        let input = "exit";
+        let result = ConsoleInput::from_str(input).unwrap();
+        assert!(matches!(result, ConsoleInput::Disconnect));
+    }
+
+    #[test]
+    fn test_invalid_format() {
+        let input = "10 + 20";
+        let result = ConsoleInput::from_str(input);
+        assert!(matches!(result, Err(InputErr::InvalidFormat)));
+    }
+
+    #[test]
+    fn test_invalid_operator() {
+        let input = "10 ^ 20 % 30";
+        let result = ConsoleInput::from_str(input);
+        assert!(matches!(result, Err(InputErr::InvalidOperator)));
+    }
+
+    #[test]
+    fn test_invalid_operand() {
+        let input = "10 + abc * 30";
+        let result = ConsoleInput::from_str(input);
+        assert!(matches!(result, Err(InputErr::InvalidOperand)));
+    }
+
+    #[test]
+    fn test_divide_by_zero() {
+        let input = "10 / 0 + 30";
+        let result = ConsoleInput::from_str(input);
+        assert!(matches!(result, Err(InputErr::Dividebyzero)));
+
+        let input = "10 + 20 / 0";
+        let result = ConsoleInput::from_str(input);
+        assert!(matches!(result, Err(InputErr::Dividebyzero)));
+    }
+}

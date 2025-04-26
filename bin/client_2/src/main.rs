@@ -19,7 +19,7 @@ async fn main() {
         tokio::sync::mpsc::channel(10);
 
     tokio::spawn(console_input_handle(tx));
-    let mut client = Client::config((127, 0, 0, 1), 7878, "Oh my god".to_string()).await;
+    let mut client = Client::config((127, 0, 0, 1), 7878, "Do mixi gaming".to_string()).await;
 
     let mut interval = tokio::time::interval(tokio::time::Duration::from_secs(3));
     let mut message_id_count: f64 = 0.0;
@@ -30,9 +30,12 @@ async fn main() {
                 client_id: client.client_id.clone(),
             })),
         });
-        client.send_to_server(connect_msg).await;
+        if let Err(e) = client.send_to_server(connect_msg).await{
 
-        match tokio::time::timeout(tokio::time::Duration::from_secs(3), client.recv_from_server()).await {
+            println!( " Error when send message to server {:?}", e);
+        }
+
+        match tokio::time::timeout(tokio::time::Duration::from_secs(30), client.recv_from_server()).await {
             Ok(Ok(Packet::Server(msg))) => match msg.payload {
                 Some(payload) => match payload {
                     protocol::proto::server_message::Payload::Connack(msg) => {
@@ -72,7 +75,9 @@ async fn main() {
                         protocol::proto::Ping { client_id: client.client_id.clone() }
                     ))
                 };
-                client.send_to_server(Packet::Client(msg)).await;
+                if let Err(e) = client.send_to_server(Packet::Client(msg)).await{
+                    println!("Error when send message to server: {:?}", e)
+                }
             },
 
             Some(input) = rx.recv() => {
@@ -84,8 +89,9 @@ async fn main() {
                                 protocol::proto::Disconnect { client_id: client.client_id.clone() }
                             ))
                         };
-                        client.send_to_server(Packet::Client(msg)).await;
-                        println!("Send to server now");
+                        if let Err(e) = client.send_to_server(Packet::Client(msg)).await{
+                            println!("Error when send message to server: {:?}", e)
+                        }
                     }
                     ConsoleInput::Operand(exreq) => {
                         let msg = ClientMessage {
@@ -102,7 +108,9 @@ async fn main() {
                             })),
                         };
                         message_id_count += 1.0;
-                        client.send_to_server(Packet::Client(msg)).await;
+                        if let Err(e) = client.send_to_server(Packet::Client(msg)).await{
+                            println!("Error when send message to server: {:?}", e)
+                        }
                     }
                 }
             },
