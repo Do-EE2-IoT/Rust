@@ -5,6 +5,12 @@ pub struct Connect {
     #[prost(string, tag = "1")]
     pub client_id: ::prost::alloc::string::String,
 }
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Connack {
+    #[prost(string, tag = "1")]
+    pub client_id: ::prost::alloc::string::String,
+}
 /// Gửi khi client muốn ngắt kết nối
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -86,7 +92,7 @@ pub mod client_message {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ServerMessage {
-    #[prost(oneof = "server_message::Payload", tags = "1, 2")]
+    #[prost(oneof = "server_message::Payload", tags = "1, 2, 3")]
     pub payload: ::core::option::Option<server_message::Payload>,
 }
 /// Nested message and enum types in `ServerMessage`.
@@ -95,8 +101,10 @@ pub mod server_message {
     #[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum Payload {
         #[prost(message, tag = "1")]
-        ExpressionResult(super::ExpressionResult),
+        Connack(super::Connack),
         #[prost(message, tag = "2")]
+        ExpressionResult(super::ExpressionResult),
+        #[prost(message, tag = "3")]
         Ack(super::Ack),
     }
 }

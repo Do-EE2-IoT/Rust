@@ -17,3 +17,25 @@ impl TryFrom<u8> for Header {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_header_try_from_valid_values() {
+        assert_eq!(Header::try_from(0b0000_0000), Ok(Header::Client));
+        assert_eq!(Header::try_from(0b1111_1111), Ok(Header::Server));
+    }
+
+    #[test]
+    fn test_header_try_from_invalid_value() {
+        assert_eq!(Header::try_from(0b1010_1010), Err("Unknown Header!!!"));
+    }
+
+    #[test]
+    fn test_header_enum_values() {
+        assert_eq!(Header::Client as u8, 0b0000_0000);
+        assert_eq!(Header::Server as u8, 0b1111_1111);
+    }
+}

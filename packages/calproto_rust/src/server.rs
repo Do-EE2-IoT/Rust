@@ -34,7 +34,7 @@ impl ServerListener{
     pub async fn accept_connect(&mut self) -> Option<Server>{
         if let Ok (connect,) = self.listener.accept().await{
             let framed = Framed::new(connect.0, CalProtoCodec);
-            println!("Accept connect with CLIENT IP : {}", connect.1);
+            println!("Request connect with CLIENT IP : {}", connect.1);
             Some(Server { framed })
         }else{
             None
