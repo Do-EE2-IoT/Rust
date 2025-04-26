@@ -1,4 +1,4 @@
-use calproto_rust::server::Server;
+use calproto_rust::server::{Server, ServerListener};
 use calproto_rust::{client::Client, packet::Packet};
 use protocol::proto::{server_message, ClientMessage, ExpressionResult, ServerMessage};
 use std::sync::Arc;
@@ -7,24 +7,25 @@ use tokio::sync::{mpsc::Sender, Mutex};
 
 async fn handle_client(mut server: Server, tx: Sender<Packet>, mut rx: Receiver<Packet>) {
     loop {
-        tokio::select! {
-            Ok(msg) = server.recv_from_client() =>  {
-                println!("Recv something from client");
+       // tokio::select! {
+            while let Ok(msg) = server.recv_from_client().await  {
+                println!("Get something from client");
                 if let Err(e) = tx.send(msg).await {
                     println!("Error send {:?}", e);
                 }
-            },
-
-            Some(msg) = rx.recv() =>  {
-               server.send_to_client(msg).await;
-
             }
+
+            // Some(msg) = rx.recv() =>  {
+            //     server.send_to_client(msg).await;
+
+            // }
         }
     }
-}
+//}
 
 async fn handle_logic(mut rx: Receiver<Packet>, tx: Sender<Packet>) {
     while let Some(msg) = rx.recv().await {
+        println!(" dsfa {:?}",  msg);
         match msg {
             calproto_rust::packet::Packet::Client(msg) => match msg.payload {
                 Some(payload) => match payload {
@@ -161,7 +162,7 @@ async fn handle_logic(mut rx: Receiver<Packet>, tx: Sender<Packet>) {
                         println!("Get Ping msg from {}", ping_msg.client_id)
                     }
                 },
-                None => todo!(),
+                None => println!("Uknown message"),
             },
             _ => println!("Hello world"),
         }
@@ -170,15 +171,17 @@ async fn handle_logic(mut rx: Receiver<Packet>, tx: Sender<Packet>) {
 
 #[tokio::main]
 async fn main() {
-    let server = Server::config((127, 0, 0, 1), 7878).await;
-    loop {
-        let (tx_client, rx_logic): (Sender<Packet>, Receiver<Packet>) =
+    let mut server_config = ServerListener::config((0, 0, 0, 0), 7878).await;
+
+      while  let Some(server) = server_config.accept_connect().await{
+        let (tx_client, rx_client): (Sender<Packet>, Receiver<Packet>) =
             tokio::sync::mpsc::channel(10);
-        let (tx_logic, rx_client): (Sender<Packet>, Receiver<Packet>) =
+        let (tx_logic, rx_logic): (Sender<Packet>, Receiver<Packet>) =
             tokio::sync::mpsc::channel(10);
         tokio::spawn(async move { handle_client(server, tx_client, rx_logic).await });
         tokio::spawn(async move { handle_logic(rx_client, tx_logic).await });
-    }
+      }
+    
 }
 
 
