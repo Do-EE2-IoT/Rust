@@ -8,7 +8,7 @@ use prost::Message;
 use protocol::proto::{ClientMessage, ServerMessage};
 use tokio_util::codec::{Decoder, Encoder, Framed};
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum Packet {
     Client(ClientMessage),
     Server(ServerMessage),
@@ -56,14 +56,17 @@ impl Decoder for CalProtoCodec {
                     }
                 }
                 Header::Server => {
+                    println!("WHY???");
                     if let Ok(server_msg) = ServerMessage::decode(src) {
                         return Ok(Some(Packet::Server(server_msg)));
                     }
                 }
             },
-            Err(e) => println!("{e}"),
+            Err(e) => {
+                println!("Ta ngan na ");
+                println!("{e}")},
         }
-
+        println!("TAM LONG SAU SAC");
         Err(MyCalError::DecodeError)
     }
 }

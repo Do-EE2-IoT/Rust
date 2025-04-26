@@ -50,32 +50,6 @@ impl FromStr for ConsoleInput {
             return Err(InputErr::InvalidFormat);
         }
 
-        let op1 = match parts[0].parse::<f64>() {
-            Ok(num) => num,
-            Err(_) => return Err(InputErr::InvalidOperand),
-        };
-
-        let op2 = match parts[2].parse::<f64>() {
-            Ok(num) => {
-                if num == 0.0 {
-                    return Err(InputErr::Dividebyzero);
-                }
-                num
-            }
-            Err(_) => return Err(InputErr::InvalidOperand),
-        };
-
-        let op3 = match parts[4].parse::<f64>() {
-            Ok(num) => {
-                if num == 0.0 {
-                    return Err(InputErr::Dividebyzero);
-                }
-                num
-            }
-            Err(_) => return Err(InputErr::InvalidOperand),
-        };
-
-
         let operator1 = parts[1].to_string();
         let operator2 = parts[3].to_string();
 
@@ -85,6 +59,33 @@ impl FromStr for ConsoleInput {
         {
             return Err(InputErr::InvalidOperator);
         }
+
+        let op1 = match parts[0].parse::<f64>() {
+            Ok(num) => num,
+            Err(_) => return Err(InputErr::InvalidOperand),
+        };
+
+        let op2 = match parts[2].parse::<f64>() {
+            Ok(num) => {
+                if num == 0.0 && operator1 == "/"{
+                    return Err(InputErr::Dividebyzero);
+                }
+                num
+            }
+            Err(_) => return Err(InputErr::InvalidOperand),
+        };
+
+        let op3 = match parts[4].parse::<f64>() {
+            Ok(num) => {
+                if num == 0.0 && operator2 == "/" {
+                    return Err(InputErr::Dividebyzero);
+                }
+                num
+            }
+            Err(_) => return Err(InputErr::InvalidOperand),
+        };
+
+
 
         Ok(Self::get_oprand_and_operator(
             op1, op2, op3, operator1, operator2,

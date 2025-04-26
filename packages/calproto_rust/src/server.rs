@@ -7,11 +7,12 @@ use tokio::net::TcpStream;
 use tokio_util::codec::Framed;
 use crate::packet::CalProtoCodec;
 
-pub struct Server {
-    framed: Framed<TcpStream, CalProtoCodec>,
+
+pub struct ServerListener{
+    listener: TcpListener,
 }
 
-impl Server {
+impl ServerListener{
     pub async fn config(server_ip: (u8, u8, u8, u8), server_port: u16) -> Self {
         let ip = IpAddr::V4(Ipv4Addr::new(
             server_ip.0,
@@ -24,15 +25,33 @@ impl Server {
         let listener = TcpListener::bind(socket_addr)
             .await
             .expect("Must bind listener to address");
-        let (stream, socket) = listener.accept().await.expect("?");
-        println!("accept connnect with client  {}", socket.ip());
-        let framed = Framed::new(stream, CalProtoCodec);
-        Self { framed }
+        Self{
+            listener
+        }
+
     }
 
-    pub async fn send_to_client(&mut self, packet: Packet) {
+    pub async fn accept_connect(&mut self) -> Option<Server>{
+        if let Ok (connect,) = self.listener.accept().await{
+            let framed = Framed::new(connect.0, CalProtoCodec);
+            println!("Accept connect with CLIENT IP : {}", connect.1);
+            Some(Server { framed })
+        }else{
+            None
+        }
+    
+    }
+}
+pub struct Server {
+    framed: Framed<TcpStream, CalProtoCodec>,
+}
+
+impl Server {
+    pub async fn send_to_client(&mut self, packet: Packet) -> Result<(), MyCalError>{
         if let Err(e) = self.framed.send(packet).await {
-            println!("Error {:?}", e);
+            Err(MyCalError::SendMessageError)
+        }else{
+            Ok(())
         }
     }
 
@@ -40,9 +59,12 @@ impl Server {
         match self.framed.next().await {
             Some(packet) => match packet {
                 Ok(msg) => Ok(msg),
-                Err(e) => Err(e),
+                Err(e) => {
+                    Err(e)
+                },
             },
-            None => Err(MyCalError::RecvMessageError),
+            None => {
+                Err(MyCalError::RecvMessageError)},
         }
     }
 }

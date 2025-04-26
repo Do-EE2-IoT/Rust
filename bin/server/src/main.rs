@@ -4,28 +4,39 @@ use protocol::proto::{server_message, ClientMessage, ExpressionResult, ServerMes
 use std::sync::Arc;
 use tokio::sync::mpsc::Receiver;
 use tokio::sync::{mpsc::Sender, Mutex};
-
 async fn handle_client(mut server: Server, tx: Sender<Packet>, mut rx: Receiver<Packet>) {
     loop {
-       // tokio::select! {
-            while let Ok(msg) = server.recv_from_client().await  {
-                println!("Get something from client");
-                if let Err(e) = tx.send(msg).await {
-                    println!("Error send {:?}", e);
+        tokio::select! {
+            result = server.recv_from_client() => {
+                match result {
+                    Ok(msg) => {
+                        if let Err(e) = tx.send(msg).await {
+                            println!("Error sending to logic handler: {:?}", e);
+                        }
+                    },
+                    Err(_) => {
+                    }
                 }
+            },
+            
+            Some(msg) = rx.recv() => {
+                if let Err(e) = server.send_to_client(msg).await {
+                    println!("Error sending to client: {:?}", e);
+                  
+                }
+            },
+            
+            else => {
+                println!("All channels have been closed");
+                break;
             }
-
-            // Some(msg) = rx.recv() =>  {
-            //     server.send_to_client(msg).await;
-
-            // }
         }
     }
-//}
+    println!("Client handler terminated");
+}
 
 async fn handle_logic(mut rx: Receiver<Packet>, tx: Sender<Packet>) {
     while let Some(msg) = rx.recv().await {
-        println!(" dsfa {:?}",  msg);
         match msg {
             calproto_rust::packet::Packet::Client(msg) => match msg.payload {
                 Some(payload) => match payload {
@@ -178,8 +189,8 @@ async fn main() {
             tokio::sync::mpsc::channel(10);
         let (tx_logic, rx_logic): (Sender<Packet>, Receiver<Packet>) =
             tokio::sync::mpsc::channel(10);
-        tokio::spawn(async move { handle_client(server, tx_client, rx_logic).await });
-        tokio::spawn(async move { handle_logic(rx_client, tx_logic).await });
+        tokio::spawn(handle_client(server, tx_client, rx_logic));
+        tokio::spawn(handle_logic(rx_client, tx_logic) );
       }
     
 }
